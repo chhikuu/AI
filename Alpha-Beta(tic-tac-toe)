@@ -1,0 +1,46 @@
+def print_board(board):
+    for row in board:
+        print(" | ".join(row))
+        print("-" * 9)
+def is_winner(board, player):
+    # Check rows
+    for row in board:
+        if all(cell == player for cell in row):
+            return True
+    # Check columns
+    for col in range(3):
+        if all(board[row][col] == player for row in range(3)):
+            return True
+    # Check diagonals
+    if all(board[i][i] == player for i in range(3)) or all(board[i][2-i] == player for i in range(3)):
+        return True
+    return False
+
+def is_full(board):
+    return all(all(cell != " " for cell in row) for row in board)
+
+# Initialize board
+board = [[" " for _ in range(3)] for _ in range(3)]
+print("Tic-Tac-Toe Game: Player 1 (X) vs Player 2 (O)\n")
+print_board(board)
+current_player = "X"
+move_count = 1
+while True:
+    print(f"\nMove {move_count}: Player {current_player}'s turn")
+    row = int(input("Enter row (1-3): ")) - 1
+    col = int(input("Enter column (1-3): ")) - 1
+    if row < 0 or row > 2 or col < 0 or col > 2 or board[row][col] != " ":
+        print("Invalid move! Try again.")
+        continue
+    board[row][col] = current_player
+    print("\nBoard after this move:")
+    print_board(board)
+    if is_winner(board, current_player):
+        print(f"🎉 Player {current_player} wins!")
+        break
+    if is_full(board):
+        print("🤝 Draw!")
+        break
+    # Switch player
+    current_player = "O" if current_player == "X" else "X"
+    move_count += 1
