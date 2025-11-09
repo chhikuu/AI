@@ -1,0 +1,81 @@
+from queue import PriorityQueue 
+ 
+def a_star_search(graph, heuristics, start, goal): 
+ pq = PriorityQueue() 
+ pq.put((heuristics[start], 0, [start])) 
+ visited = set() 
+     
+ while not pq.empty(): 
+     f, g, path = pq.get() 
+     node = path[-1] 
+      
+     if node == goal: 
+         return path 
+          
+     if node not in visited: 
+         visited.add(node) 
+          
+         for neighbor, cost in graph.get(node, []): 
+             if neighbor not in visited: 
+                 new_g = g + cost 
+                 new_f = new_g + heuristics[neighbor] 
+                 new_path = list(path) 
+                 new_path.append(neighbor) 
+                 pq.put((new_f, new_g, new_path)) 
+                  
+ return None 
+ 
+def get_graph_input(): 
+ graph = {} 
+ print("Enter edges in format: node neighbor cost") 
+ print("Type 'done' when finished:") 
+ while True: 
+     line = input() 
+     if line.lower() == 'done': 
+         break 
+     parts = line.split() 
+     if len(parts) != 3: 
+         print("Invalid input. Try again.") 
+         continue 
+     node, neighbor, cost = parts[0], parts[1], float(parts[2]) 
+     graph.setdefault(node, []).append((neighbor, cost)) 
+     # For undirected graph, add the reverse edge also 
+     graph.setdefault(neighbor, []).append((node, cost)) 
+ return graph 
+ 
+def get_heuristics_input(): 
+ heuristics = {} 
+ print("Enter heuristics in format: node heuristic_value") 
+ print("Type 'done' when finished:") 
+ while True: 
+     line = input() 
+     if line.lower() == 'done': 
+         break 
+     parts = line.split() 
+     if len(parts) != 2: 
+         print("Invalid input. Try again.") 
+         continue 
+     node, h_val = parts[0], float(parts[1]) 
+     heuristics[node] = h_val 
+ return heuristics 
+ 
+if __name__ == "__main__": 
+ print("=== Build your graph ===") 
+ graph = get_graph_input() 
+     
+ print("\n=== Enter heuristics ===") 
+ heuristics = get_heuristics_input() 
+     
+ start = input("\nEnter start node: ") 
+ goal = input("Enter goal node: ") 
+ 
+ if start not in graph or goal not in graph: 
+     print("Start or goal node not in graph!") 
+ elif start not in heuristics or goal not in heuristics: 
+     print("Heuristics missing for start or goal node!") 
+ else: 
+     path = a_star_search(graph, heuristics, start, goal) 
+     if path: 
+         print("\nA* Search Path:", path) 
+     else: 
+         print("\nNo path found from", start, "to", goal) 
